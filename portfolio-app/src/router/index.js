@@ -4,6 +4,8 @@ import Register from '../views/Register.vue'
 import FAQ from '../views/FAQ.vue'
 import Search from '@/views/Search.vue'
 import LogIn from '@/views/LogIn.vue'
+import ServicesList from '@/views/ServicesList.vue'
+import Profile from '@/views/Profile.vue'
 
 
 const router = createRouter({
@@ -34,6 +36,17 @@ const router = createRouter({
       name: 'search',
       component: Search,
     },
+    {
+      path: '/list',
+      name: 'list',
+      component: ServicesList,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
+    },
+
     
   ],
 })

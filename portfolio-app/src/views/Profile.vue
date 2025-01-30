@@ -34,31 +34,11 @@
                         <router-link to="/add-service">
                             <div class="btn add-service-btn btn-warning w-100 mb-3">+ Добавить услугу</div>
                         </router-link>
-                        <div class="card mb-3 service-card" v-for="service in serviceList">
-                            <div class="row g-0 p-2">
-                                <!-- <div class="col">
-                                    <div class="service-img"><img src="" alt="фото услуги"></div>
-                                </div> -->
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ service.title }}</h5>
-                                        <p class="card-text">
-                                            {{ service.descr }}
-                                        </p>
-                                        <p class="card-text d-flex align-items-end justify-content-between">
-                                            <small class="text-muted align-middle">Срок {{ service.workTime }}</small>
-                                            <a class="btn btn-warning">{{ service.priceMin }} р - {{ service.priceMax }}
-                                                р.</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="about-tab" v-if="activeTab === 'about'">
                         <div class="about-text">
-                            {{ profile.profile_bio || 'Информация о пользователе отсутствует.' }}
+                            <!-- {{ profile.profile_bio || 'Информация о пользователе отсутствует.' }} -->
                         </div>
                         <div class="about-links">
                             <li class="list-group-item">
@@ -79,37 +59,37 @@
 </template>
 
 <script>
-import api
- from '@/api';
+import axios from 'axios';
+
 export default {
     data() {
         return {
             activeTab: 'services',
-            serviceList: [],
+            services: [],
+
         };
     },
-    computed: {
-        profile() {
-            return this.$store.getters.profile || {}; // Получаем профиль из хранилища
-        },
+    mounted() {
+        // this.getServices()
     },
     methods: {
         setActiveTab(tab) {
             this.activeTab = tab;
         },
-        async fetchServices() {
-            try {
-                const response = await api.getServices();
-                this.serviceList = response.data; 
-            } catch (error) {
-                console.error('Ошибка при загрузке услуг:', error);
-            }
-        },
+        // getServices() {
+        //     axios
+        //         .get('http://127.0.0.1:8000/api/services/')
+        //         .then(response => {
+        //             console.log('data', response.data)
+
+        //             this.posts = response.data
+        //         })
+        //         .catch(error => {
+        //             console.log('error', error)
+        //         })
+        // }
     },
-    async created() {
-        await this.$store.dispatch('fetchUser');
-        await this.fetchServices();
-    },
+
 }
 </script>
 

@@ -124,8 +124,7 @@ export default {
                     serviceActive: false,
                 };
 
-                // Добавление нового сервиса в список (если нужно)
-                this.services.unshift(response.data);
+                this.$router.push('/');
             } catch (error) {
                 console.log('error', error);
             }

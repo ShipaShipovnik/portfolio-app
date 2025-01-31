@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import LogOut from "@/views/LogOut.vue";
 
 export const useUserStore = defineStore({
   id: "user",
@@ -96,6 +97,34 @@ export const useUserStore = defineStore({
           console.log(error);
 
           this.removeToken();
+        });
+    },
+
+    logout() {
+      const token = this.user.access; 
+
+      
+      this.removeToken();
+
+      
+      axios.defaults.headers.common["Authorization"] = "";
+
+      
+      axios
+        .post(
+          "/logout/",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Передаем токен в заголовке
+            },
+          }
+        )
+        .then(() => {
+          console.log("User logged out successfully");
+        })
+        .catch((error) => {
+          console.log("Logout error:", error);
         });
     },
   },

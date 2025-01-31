@@ -1,16 +1,16 @@
 <template>
     <div class="profile-layout">
-        <div class="container pt-5 row mx-auto h-75">
+        <div class="container pt-5 row mx-auto h-75 gap-4">
             <div class="sidebar col-4  w-25 p-3 mx-auto shadow-lg">
                 <div class="container">
                     <img src="https://sh122-omsk-r52.gosweb.gosuslugi.ru/netcat_files/9/67/team_fpo_woman_1100x1100_4.png"
                         alt="" class="avatar mb-3 img-fluid">
                     <h4 class="card-title mb-1">
-                        {{ userStore.user.name || 'Имя пользователя' }}
+                        {{ user.name || 'Имя пользователя' }}
                     </h4>
-                    <p>
+                    <p class="text-muted small">
                         <!-- {{ profile.profile_spec || 'Специальность' }} -->
-                        спек
+                        Специальность не указана
                     </p>
                     <div class="tab-btns">
                         <button href class="btn mb-2 d-block btn-warning w-100"
@@ -29,16 +29,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-1"></div>
+            <!-- <div class="col-1"></div> -->
             <div class="main-block p-3 col shadow-lg">
                 <div class="container">
                     <div class="about-tab" v-if="activeTab === 'gallery'">
                         <h3 class="text-muted">Тут будут ваши работы</h3>
                     </div>
                     <div class="services-list" v-if="activeTab === 'services'">
-                        <router-link to="/add-service">
+                        <!-- добавление услуги кнопка -->
+                        <router-link to="/add-service" v-if="userStore.user.id === user.id">
                             <div class="btn add-service-btn btn-warning w-100 mb-3">+ Добавить услугу</div>
                         </router-link>
+
+                        <!-- список -->
                         <p v-if="services.lenght === 0">У вас нет услуг!</p>
                         <!-- услуга -->
                         <div class="card mb-3 service-card" v-for="service in services" :key="service.id">
@@ -102,7 +105,9 @@ export default {
         return {
             activeTab: 'services',
             services: [],
-            // user: {},
+            user: {
+
+            }
         };
     },
     // watch: {
@@ -117,6 +122,7 @@ export default {
     methods: {
         setActiveTab(tab) {
             this.activeTab = tab;
+
         },
         getMyServices() {
             axios
@@ -125,7 +131,8 @@ export default {
                     console.log('data', response.data);
 
                     // Убедитесь, что данные находятся в response.data.data
-                    this.services = response.data.data || [];
+                    this.services = response.data.services || [];
+                    this.user = response.data.user || [];
                     console.log(this.services);
                 })
                 .catch(error => {
@@ -138,4 +145,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.link-active {
+    color: #ffc107;
+    font-weight: bold;
+}
+</style>

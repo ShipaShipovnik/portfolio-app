@@ -48,42 +48,47 @@ export default {
 
     methods: {
         async submitForm() {
-            this.errors = []
+            this.errors = [];
 
+            // Валидация полей
             if (this.form.email === '') {
-                this.errors.push('Your e-mail is missing')
+                this.errors.push('Your e-mail is missing');
             }
 
             if (this.form.password === '') {
-                this.errors.push('Your password is missing')
+                this.errors.push('Your password is missing');
             }
 
             if (this.errors.length === 0) {
-                await axios
-                    .post('/login/', this.form)
-                    .then(response => {
-                        this.userStore.setToken(response.data)
+                try {
+                    // Шаг 1: Авторизация (получение токена)
+                    const loginResponse = await axios.post('/login/', this.form);
+                    this.userStore.setToken(loginResponse.data);
 
-                        console.log(response.data.access)
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + loginResponse.data.access;
 
-                        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.access;
-                    })
-                    .catch(error => {
-                        console.log('error', error)
-                    })
-                
-                await axios
-                    .get('/me/')
-                    .then(response => {
-                        this.userStore.setUserInfo(response.data)
+                    // Шаг 2: Получение информации о пользователе
+                    const userResponse = await axios.get('/me/');
+                    this.userStore.setUserInfo(userResponse.data);
 
-                        this.$router.push('/')
-                    })
-                    .catch(error => {
-                        console.log('error', error)
-                    })
+                    // Перенаправление на главную страницу
+                    this.$router.push('/');
+                } catch (error) {
+                    console.log('error', error);
+
+                    // Обработка ошибок
+                    if (error.response) {
+                        if (error.response.status === 401) {
+                            this.errors.push('Invalid email or password');
+                        } else {
+                            this.errors.push('Something went wrong. Please try again.');
+                        }
+                    } else {
+                        this.errors.push('Network error. Please check your connection.');
+                    }
+                }
             }
-        }
+        },
     }
 }
 </script>

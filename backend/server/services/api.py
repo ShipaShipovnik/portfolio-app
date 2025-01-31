@@ -5,7 +5,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-
+from users.models import User
+from users.serializers import UserSerializer
 from .forms import ServiceForm
 from .models import Service, Category
 from .serializers import ServiceSerializer, CategorySerializer
@@ -19,13 +20,19 @@ def service_list(request):
 
     return JsonResponse({'data': serializer.data})
 
+
 @api_view(['GET'])
-def service_list_profile(request,id):
+def service_list_profile(request, id):
+    user = User.objects.get(pk=id)
     services = Service.objects.filter(created_by=id)
 
-    serializer = ServiceSerializer(services, many=True)
+    services_serializer = ServiceSerializer(services, many=True)
+    user_serializer = UserSerializer(user)
 
-    return JsonResponse({'data': serializer.data})
+    return JsonResponse({
+        'services': services_serializer.data,
+        'user': user_serializer.data
+    }, safe=False)
 
 
 @api_view(['POST'])

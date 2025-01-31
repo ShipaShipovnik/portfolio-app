@@ -11,10 +11,10 @@
                     </span>
                 </div>
             </div>
-            <div class="sidebar col-4  w-25 p-3 mx-auto shadow">
+            <div class="sidebar col-4 p-3 mx-auto shadow">
                 <p class="text-muted">Фильтрация:</p>
-                <label class="">Цена <input type="text">р. - <input type="text"></label>
-                <label for="">Категория</label><input type="text">
+                <label class="">Цена р. <input type="number" class="form-control"></label>
+                <label for="">Категория</label><input type="text" class="form-control">
             </div>
             <div class="main-block p-3 col shadow">
                 <p class="text-muted">Результат поиска:</p>
@@ -30,4 +30,6 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+
+</style>

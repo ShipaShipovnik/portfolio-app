@@ -19,6 +19,14 @@ def service_list(request):
 
     return JsonResponse({'data': serializer.data})
 
+@api_view(['GET'])
+def service_list_profile(request,id):
+    services = Service.objects.filter(created_by=id)
+
+    serializer = ServiceSerializer(services, many=True)
+
+    return JsonResponse({'data': serializer.data})
+
 
 @api_view(['POST'])
 def add_service(request):

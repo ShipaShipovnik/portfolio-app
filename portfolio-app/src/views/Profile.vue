@@ -5,8 +5,13 @@
                 <div class="container">
                     <img src="https://sh122-omsk-r52.gosweb.gosuslugi.ru/netcat_files/9/67/team_fpo_woman_1100x1100_4.png"
                         alt="" class="avatar mb-3 img-fluid">
-                    <h4 class="card-title mb-1">{{ profile.profile_name || 'Имя пользователя' }}</h4>
-                    <p>{{ profile.profile_spec || 'Специальность' }}</p>
+                    <h4 class="card-title mb-1">
+                        {{ userStore.user.name || 'Имя пользователя' }}
+                    </h4>
+                    <p>
+                        <!-- {{ profile.profile_spec || 'Специальность' }} -->
+                        спек
+                    </p>
                     <div class="tab-btns">
                         <button href class="btn mb-2 d-block btn-warning w-100"
                             @click="setActiveTab('gallery')">Галлерея</button>
@@ -34,6 +39,26 @@
                         <router-link to="/add-service">
                             <div class="btn add-service-btn btn-warning w-100 mb-3">+ Добавить услугу</div>
                         </router-link>
+                        <p v-if="services.lenght === 0">У вас нет услуг!</p>
+                        <!-- услуга -->
+                        <div class="card mb-3 service-card" v-for="service in services" :key="service.id">
+                            <div class="row g-0 p-2">
+                                <div class="col">
+                                    <div class="service-img"><img src="" alt="фото услуги"></div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ service.title }}</h5>
+                                        <p class="card-text">
+                                            {{ service.descr }}
+                                        </p>
+                                        <p class="card-text d-flex align-items-end justify-content-between">
+                                            <a class="btn btn-warning">{{ service.price }} р</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="about-tab" v-if="activeTab === 'about'">
@@ -59,35 +84,55 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { useUserStore } from '@/stores/user'
+import axios from 'axios'
 
 export default {
+    setup() {
+        const userStore = useUserStore()
+
+        return {
+            userStore
+        }
+    },
+    mounted() {
+        this.getMyServices()
+    },
     data() {
         return {
             activeTab: 'services',
             services: [],
-
+            // user: {},
         };
     },
-    mounted() {
-        // this.getServices()
-    },
+    // watch: {
+    //     '$route.params.id': {
+    //         handler: function () {
+    //             this.getMyServices()
+    //         },
+    //         deep: true,
+    //         immediate: true
+    //     }
+    // },
     methods: {
         setActiveTab(tab) {
             this.activeTab = tab;
         },
-        // getServices() {
-        //     axios
-        //         .get('http://127.0.0.1:8000/api/services/')
-        //         .then(response => {
-        //             console.log('data', response.data)
+        getMyServices() {
+            axios
+                .get(`http://127.0.0.1:8000/api/services/profile/${this.$route.params.id}`)
+                .then(response => {
+                    console.log('data', response.data);
 
-        //             this.posts = response.data
-        //         })
-        //         .catch(error => {
-        //             console.log('error', error)
-        //         })
-        // }
+                    // Убедитесь, что данные находятся в response.data.data
+                    this.services = response.data.data || [];
+                    console.log(this.services);
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    this.error = 'Ошибка при загрузке данных';
+                });
+        }
     },
 
 }

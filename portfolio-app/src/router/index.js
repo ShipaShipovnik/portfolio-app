@@ -49,7 +49,7 @@ const router = createRouter({
       component: ServicesList,
     },
     {
-      path: '/profile',
+      path: '/profile/:id',
       name: 'profile',
       component: Profile,
     },

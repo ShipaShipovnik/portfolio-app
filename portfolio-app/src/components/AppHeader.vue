@@ -20,7 +20,7 @@
 
       <div class="col-md-3 text-end ">
         <span v-if="userStore.user.isAuthenticated" class="d-flex align-items-center">
-          <router-link to="/profile" class="btn btn-warning mx-2">Профиль {{ userStore.user.name }}</router-link>
+          <router-link :to="{name:'profile', params:{'id': userStore.user.id}}" class="btn btn-warning mx-2">Профиль {{ userStore.user.name }}</router-link>
           <router-link to="/register" class="btn btn-warning mx-2">Выйти</router-link>
         </span>
         <span v-else>

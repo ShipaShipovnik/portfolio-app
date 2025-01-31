@@ -8,7 +8,7 @@
 
                 <div class="input-block">
                     <label>Название услуги</label>
-                    <input type="text" class="form-control" v-model="form.serviceName"
+                    <input type="text" class="form-control" v-model="form.serviceTitle"
                         placeholder="Какую услугу вы предоставляете?">
                 </div>
 
@@ -18,6 +18,12 @@
                 </div>
 
                 <div class="input-block">
+                    <label>Цена</label>
+                    <input type="text" class="form-control" v-model.number="form.servicePrice"
+                        placeholder="Какую услугу вы предоставляете?">
+                </div>
+
+                <!-- <div class="input-block">
                     <label>Цена(руб):</label>
                     <span>*Мин. цена<input type="number" class="form-control" placeholder="0"
                             v-model.number="form.serviceMinPrice"> - Макс. цена <input type="number"
@@ -33,35 +39,14 @@
                     <label>Срок выполнения:</label>
                     <input type="text" class="form-control" placeholder="Напр. от 2 недель до 1 месяца"
                         v-model="form.serviceWorkTime">
-                </div>
+                </div> -->
 
                 <div class="input-block">
                     <label for="">Категория:</label>
-                    <v-select v-model="form.serviceCategory" :options="catgList" label="name"
+                    <v-select v-model="form.serviceCategory" :options="categories" label="name"
                         :reduce="category => category.id" placeholder="Выберите категорию"></v-select>
                 </div>
 
-                <!-- <div class="input-block">
-                    <label for="">*Фото услуги:</label>
-                    <div class="input-block">
-                        <div class="dropzone" :class="{ 'active-dropzone': activeDrop }"
-                            @dragenter.prevent="toggleActive" @dragleave.prevent="toggleActive" @dragover.prevent
-                            @drop.prevent="toggleActive">
-                            <span>Перетащите или дропните файл</span>
-                            <span>ИЛИ</span>
-                            <label for="dropzoneFile">Выбрать файлы</label>
-                            <input type="file" id="dropzoneFile" accept=".png, .jpg, .jpeg"
-                                @change="handleFileUpload" />
-                            <span v-if="form.files">
-                                Выбрано фото: {{ form.files }}
-                            </span>
-                            <span v-else> Фото не выбраны </span>
-                        </div>
-                        <div class="input-errors">
-                            <div class="error-msg"></div>
-                        </div>
-                    </div>
-                </div> -->
 
                 <div class="input-block">
                     <label>Активна сейчас?:</label>
@@ -75,9 +60,9 @@
 </template>
 
 <script>
-import api from '@/api';
-import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
+import vSelect from 'vs-vue3-select'
+import 'vs-vue3-select/dist/vs-vue3-select.css'
+import axios from 'axios'
 
 export default {
     components: {
@@ -86,79 +71,63 @@ export default {
     data() {
         return {
             form: {
-                serviceName: "",
+                serviceTitle: "",
                 serviceDescrpt: "",
-                serviceMinPrice: 0,
-                serviceMaxPrice: 1,
-                serviceAmount: 1,
-                serviceWorkTime: "",
-                serviceCategory: "",
+                servicePrice: 1,
+                serviceCategory: null,
                 serviceActive: false,
-                //files: null,
             },
             activeDrop: false,
-            catgList: [],
-            //fileError: "",
+            categories: [],
         }
     },
     created() {
-        this.fetchCategories();
+        this.getCategories();
     },
     methods: {
-        // Категории
-        async fetchCategories() {
-            try {
-                const response = await api.getCategories()
-                this.catgList = response.data;
-            } catch (error) {
-                console.error('Ошибка при получении категорий:', error)
-            }
+        getCategories() {
+            axios
+                .get('http://127.0.0.1:8000/api/services/categories')
+                .then(response => {
+                    console.log('data', response.data);
+                    this.categories = response.data.data || [];
+                    console.log(this.categories);
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    this.error = 'Ошибка при загрузке данных';
+                });
         },
-        // Переключение состояния dropzone
-        toggleActive() {
-            this.activeDrop = !this.activeDrop;
-        },
-
-        // handleFileUpload(event) {
-        //     const file = event.target.files[0];
-        //     if (file) {
-        //         this.form.file = file; 
-        //     } else {
-        //         this.form.file = null;
-        //     }
-        // },
 
         async onSubmit() {
-            const formData = new FormData();
+            const formData = {
+                title: this.form.serviceTitle,
+                descr: this.form.serviceDescrpt,
+                price: parseFloat(this.form.servicePrice),
+                isActive: Boolean(this.form.serviceActive),
+                category: this.form.serviceCategory,
+            };
 
-            // Добавляем текстовые поля
-            formData.append('title', this.form.serviceName);
-            formData.append('descr', this.form.serviceDescrpt);
-            formData.append('priceMin', parseFloat(this.form.serviceMinPrice));
-            formData.append('priceMax', parseFloat(this.form.serviceMaxPrice));
-            formData.append('amount', parseInt(this.form.serviceAmount, 10));
-            formData.append('workTime', this.form.serviceWorkTime);
-            formData.append('isActive', Boolean(this.form.serviceActive));
-            formData.append('category', this.form.serviceCategory);
+            console.log('submitForm', this.formData)
 
-            // if (this.form.file) {
-            //     formData.append('photo', this.form.file); 
-            // } else {
-            //     console.error("Файл не выбран!");
-            // }
-
-            // Логирование FormData для отладки
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
 
             try {
-                const response = await api.createService(formData);
-                console.log('Услуга успешно создана:', response.data);
-                alert('Услуга успешно создана!');
+                const response = await axios.post('http://127.0.0.1:8000/api/services/add-service', formData);
+                console.log('data', response.data);
+
+                // Очистка формы после успешной отправки
+                this.form = {
+                    serviceTitle: "",
+                    serviceDescrpt: "",
+                    servicePrice: 1,
+                    serviceCategory: null,
+                    serviceActive: false,
+                };
+
+                // Добавление нового сервиса в список (если нужно)
+                this.services.unshift(response.data);
             } catch (error) {
-                console.error('Ошибка при создании услуги:', error.response ? error.response.data : error.message);
-                alert('Произошла ошибка при создании услуги.');
+                console.log('error', error);
             }
         }
     }

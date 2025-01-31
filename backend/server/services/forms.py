@@ -1,9 +1,9 @@
 from django.forms import ModelForm
 
-from .models import Post
+from .models import Service
 
 
-class PostForm(ModelForm):
+class ServiceForm(ModelForm):
     class Meta:
-        model = Post
-        fields = ('title','descr', 'price', 'isActive')
+        model = Service
+        fields = ('title', 'descr', 'price','isActive')

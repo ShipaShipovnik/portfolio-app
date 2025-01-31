@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 
-from .models import Service
-from .serializers import ServiceSerializer
+from .forms import ServiceForm
+from .models import Service, Category
+from .serializers import ServiceSerializer, CategorySerializer
 
 
 @api_view(['GET'])
@@ -16,10 +21,20 @@ def service_list(request):
 
 
 @api_view(['POST'])
-def service_create(request):
-    form = ServiceForm(request.data)
+def add_service(request):
+    if request.method == 'POST':
+        serializer = ServiceSerializer(data=request.data)
+        if serializer.is_valid():
+            service = serializer.save(created_by=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if form.is_valid():
-        service = form.save(commit=False)
-        service.created_by = request.user
-        service.save()
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def categories_list(request):
+    categories = Category.objects.all()
+
+    serializer = CategorySerializer(categories, many=True)
+
+    return JsonResponse({'data': serializer.data})

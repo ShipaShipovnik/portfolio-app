@@ -6,6 +6,8 @@ import Search from '@/views/Search.vue'
 import LogIn from '@/views/LogIn.vue'
 import ServicesList from '@/views/ServicesList.vue'
 import Profile from '@/views/Profile.vue'
+import AddService from '@/views/AddService.vue'
+import LogOut from '@/views/LogOut.vue'
 
 
 const router = createRouter({
@@ -27,6 +29,11 @@ const router = createRouter({
       component: LogIn,
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: LogOut,
+    },
+    {
       path: '/faq',
       name: 'FAQ',
       component: FAQ,
@@ -46,7 +53,11 @@ const router = createRouter({
       name: 'profile',
       component: Profile,
     },
-
+    {
+      path: '/add-service',
+      name: 'add-service',
+      component: AddService,
+    },
     
   ],
 })

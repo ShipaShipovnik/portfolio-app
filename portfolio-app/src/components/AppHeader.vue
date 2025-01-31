@@ -20,8 +20,8 @@
 
       <div class="col-md-3 text-end ">
         <span v-if="userStore.user.isAuthenticated" class="d-flex align-items-center">
-          {{ userStore.user.name }}
-          <button class="logout-button">Выйти</button>
+          <router-link to="/profile" class="btn btn-warning mx-2">Профиль {{ userStore.user.name }}</router-link>
+          <router-link to="/register" class="btn btn-warning mx-2">Выйти</router-link>
         </span>
         <span v-else>
           <router-link to="/login" class="btn btn-outline-warning me-2">Login</router-link>

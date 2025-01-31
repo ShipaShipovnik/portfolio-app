@@ -1,5 +1,6 @@
 import uuid
 from email.policy import default
+from tabnanny import verbose
 
 from django.db import models
 from django.utils.timesince import timesince
@@ -33,7 +34,7 @@ class Service(models.Model):
     title = models.CharField(max_length=300,default='')
     price = models.FloatField(null=False, blank=False)
     descr = models.TextField(blank=False, null=False)
-    # isActive = models.BooleanField(default=True)
+    isActive = models.BooleanField(default=True)
     # workTime = models.CharField(max_length=150)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='services')
 
@@ -44,6 +45,9 @@ class Service(models.Model):
 
     class Meta:
         ordering = ('-created_at',)
+
+    def __str__(self):
+        return f'{self.title}'
 
     def created_at_formatted(self):
         return timesince(self.created_at)

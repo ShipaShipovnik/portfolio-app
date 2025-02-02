@@ -3,8 +3,7 @@
         <div class="container pt-5 row mx-auto h-75 gap-4">
             <div class="sidebar col-4  w-25 p-3 mx-auto shadow-lg">
                 <div class="container">
-                    <img src="https://sh122-omsk-r52.gosweb.gosuslugi.ru/netcat_files/9/67/team_fpo_woman_1100x1100_4.png"
-                        alt="" class="avatar mb-3 img-fluid">
+                    <img :src="user.get_avatar" alt="" class="avatar mb-3 img-fluid">
                     <h4 class="card-title mb-1">
                         {{ user.name || 'Имя пользователя' }}
                     </h4>
@@ -27,7 +26,8 @@
                                     d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09" />
                             </svg></a> -->
                     </div>
-                    <router-link to="/profile/edit" class="btn mb-2 d-block btn-warning w-100" v-if="userStore.user.id === user.id">
+                    <router-link to="/profile/edit" class="btn mb-2 d-block btn-warning w-100"
+                        v-if="userStore.user.id === user.id">
                         Редактировать профиль
                     </router-link>
                 </div>
@@ -100,6 +100,7 @@ export default {
         return {
             userStore
         }
+
     },
     mounted() {
         this.getMyServices()

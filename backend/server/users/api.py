@@ -56,19 +56,20 @@ def logout(request):
 
 
 @api_view(['POST'])
-@authentication_classes([JWTAuthentication])  # Включаем JWT-аутентификацию
-@permission_classes([IsAuthenticated])  # Только для аутентифицированных пользователей
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def edit_profile(request):
     user = request.user
     email = request.data.get('email')
 
-    # Проверяем, существует ли email у другого пользователя
     if User.objects.exclude(id=user.id).filter(email=email).exists():
         return Response({'message': 'Имейл уже существует'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        print(request.data)
+        print(request.FILES)
 
-    # Обновляем данные пользователя
-    user.email = email
-    user.name = request.data.get('name')
-    user.save()
+        form = ProfileForm(request.data,request.FILES ,instance=user)
 
-    return Response({'message': 'Информация обновлена'}, status=status.HTTP_200_OK)
+        if form.is_valid():
+            form.save()
+        return Response({'message': 'Информация обновлена'}, status=status.HTTP_200_OK)

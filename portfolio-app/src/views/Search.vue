@@ -43,6 +43,7 @@
                 <p v-if="usersResult.length === 0">Таких пользователей не нашлось!</p>
                 <div class="row py-3 flex-items-sm-center" v-for="user in usersResult" :key="user.id">
                     <div class="column border">
+                        <img :src="user.get_avatar" alt="">
                         <router-link :to="{ name: 'profile', params: { 'id': user.id } }"> {{ user.name }}
                         </router-link>
 

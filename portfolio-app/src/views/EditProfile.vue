@@ -3,6 +3,11 @@
         <h1 class="h1 text-center">Редактировать профиль</h1>
         <div class="register-form form text-center">
             <form v-on:submit.prevent="submitForm" class="d-flex flex-column w-50 mx-auto my-3">
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="inputGroupFile02" @change="handleFileUpload">
+                    <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                </div>
+
                 <label class="form-label mb-2">
                     Имя:
                     <input class="form-control" type="text" v-model="form.name" required />
@@ -18,7 +23,7 @@
                     </div>
                 </template>
 
-                <button type="submit" class="btn btn-warning mt-3 " >Сохранить измнения</button>
+                <button type="submit" class="btn btn-warning mt-3 ">Сохранить измнения</button>
             </form>
         </div>
     </div>
@@ -43,11 +48,15 @@ export default {
             form: {
                 email: this.userStore.user.email,
                 name: this.userStore.user.name,
+                avatar: null,
             },
             errors: [],
         }
     },
     methods: {
+        handleFileUpload(event) {
+            this.form.avatar = event.target.files[0];
+        },
         async submitForm() {
             this.errors = [];
 
@@ -63,16 +72,15 @@ export default {
 
             if (this.errors.length === 0) {
                 try {
-                    // Проверяем, истек ли токен, и обновляем его при необходимости
                     await this.userStore.refreshTokenIfNeeded();
 
-                    // Отправляем запрос на обновление профиля
                     const response = await axios.post(
                         'http://127.0.0.1:8000/api/edit-profile/',
                         this.form,
                         {
                             headers: {
                                 Authorization: `Bearer ${this.userStore.user.access}`,
+                                "Content-Type": "multipart/form-data",
                             },
                         }
                     );
@@ -90,6 +98,8 @@ export default {
                         // Очищаем форму (если нужно)
                         this.form.email = this.userStore.user.email;
                         this.form.name = this.userStore.user.name;
+
+                        this.$router.back()
 
                     } else {
                         console.error('Что-то пошло не так');

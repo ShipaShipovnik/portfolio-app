@@ -19,7 +19,7 @@
             <div class="main-block p-3 col shadow">
                 <p class="text-muted">Результат поиска:</p>
                 <!-- услуги -->
-                <p v-if="servicesResult.lenght === 0">Таких услуг не нашлось!</p>
+                <p v-if="servicesResult.length === 0">Таких услуг не нашлось!</p>
                 <div class="card mb-3 service-card" v-for="service in servicesResult" :key="service.id">
                     <div class="row g-0 p-2">
                         <div class="col">
@@ -40,11 +40,12 @@
                 </div>
                 <!-- <p class="text-muted">Вы еще ничего не искали):</p> -->
                 <!-- Пользователи -->
-                <p v-if="usersResult.lenght === 0">Таких пользователей не нашлось!</p>
+                <p v-if="usersResult.length === 0">Таких пользователей не нашлось!</p>
                 <div class="row py-3 flex-items-sm-center" v-for="user in usersResult" :key="user.id">
                     <div class="column border">
-                        <router-link :to="{name: 'profile', params:{'id': user.id}}"> {{ user.name }} </router-link>
-                            
+                        <router-link :to="{ name: 'profile', params: { 'id': user.id } }"> {{ user.name }}
+                        </router-link>
+
                     </div>
                 </div>
             </div>
@@ -81,14 +82,10 @@ export default {
                     console.error('error', error)
                 })
         }
-
-
     }
-
 }
 </script>
 
 <style scoped>
 /* юзер карты */
-
 </style>

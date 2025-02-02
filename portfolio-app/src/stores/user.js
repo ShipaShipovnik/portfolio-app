@@ -9,8 +9,8 @@ export const useUserStore = defineStore({
     user: {
       isAuthenticated: false,
       id: null,
-      name: null,
-      email: null,
+      name: '',
+      email: '',
       access: null,
       refresh: null,
     },
@@ -99,6 +99,28 @@ export const useUserStore = defineStore({
           this.removeToken();
         });
     },
+
+    async refreshTokenIfNeeded() {
+      if (!this.user.access) {
+        await this.refreshToken();
+      } else {
+        try {
+          // Проверяем, истек ли токен
+          const tokenPayload = JSON.parse(atob(this.user.access.split('.')[1]));
+          const tokenExpiration = tokenPayload.exp * 1000; // Переводим в миллисекунды
+          const currentTime = Date.now();
+  
+          if (tokenExpiration < currentTime) {
+            // Токен истек, обновляем его
+            await this.refreshToken();
+          }
+        } catch (error) {
+          console.log('Ошибка при проверке токена:', error);
+          await this.refreshToken();
+        }
+      }
+    },
+
 
     logout() {
       const token = this.user.access; 

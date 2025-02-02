@@ -36,17 +36,18 @@
 
 <script>
 import { useUserStore } from '@/stores/user';
-import { watchEffect } from 'vue';
+import { computed } from 'vue';
 
 export default {
   setup() {
     const userStore = useUserStore()
-    
-    watchEffect(() => {
-      console.log("Authentication status:", userStore.user.isAuthenticated);
-    });
 
+    const isAuthenticated = computed(() => userStore.user.isAuthenticated);
+    const user = computed(() => userStore.user);
+    
     return {
+      isAuthenticated,
+      user,
       userStore
     }
   },

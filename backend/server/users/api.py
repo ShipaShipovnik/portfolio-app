@@ -1,10 +1,15 @@
 from django.http import JsonResponse
+from rest_framework import status
 
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .form import RegisterForm
+from users.models import User
+from users.serializers import UserSerializer
+
+from .form import RegisterForm, ProfileForm
 
 
 @api_view(['GET'])
@@ -42,9 +47,28 @@ def register(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])  # Разрешаем доступ без аутентификации
+@permission_classes([AllowAny])
 def logout(request):
     if request.method == 'POST':
         # Инвалидация токена (если нужно)
         # Например, удаление токена из базы данных
         return Response({"message": "Logged out successfully"})
+
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])  # Включаем JWT-аутентификацию
+@permission_classes([IsAuthenticated])  # Только для аутентифицированных пользователей
+def edit_profile(request):
+    user = request.user
+    email = request.data.get('email')
+
+    # Проверяем, существует ли email у другого пользователя
+    if User.objects.exclude(id=user.id).filter(email=email).exists():
+        return Response({'message': 'Имейл уже существует'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Обновляем данные пользователя
+    user.email = email
+    user.name = request.data.get('name')
+    user.save()
+
+    return Response({'message': 'Информация обновлена'}, status=status.HTTP_200_OK)

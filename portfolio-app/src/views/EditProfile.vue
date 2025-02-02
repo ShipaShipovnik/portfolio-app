@@ -1,0 +1,114 @@
+<template>
+    <div class="main-block register-page container shadow p-5">
+        <h1 class="h1 text-center">Редактировать профиль</h1>
+        <div class="register-form form text-center">
+            <form v-on:submit.prevent="submitForm" class="d-flex flex-column w-50 mx-auto my-3">
+                <label class="form-label mb-2">
+                    Имя:
+                    <input class="form-control" type="text" v-model="form.name" required />
+                </label>
+                <label class="form-label mb-2">
+                    Email:
+                    <input class="form-control" type="email" v-model="form.email" required />
+                </label>
+
+                <template v-if="this.errors.length > 0">
+                    <div class="mt-3 p-6">
+                        <p v-for="error in errors" :key="error">{{ error }}</p>
+                    </div>
+                </template>
+
+                <button type="submit" class="btn btn-warning mt-3 " >Сохранить измнения</button>
+            </form>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+
+
+export default {
+    setup() {
+        const userStore = useUserStore()
+
+        return {
+            userStore
+        }
+    },
+    data() {
+        return {
+            form: {
+                email: this.userStore.user.email,
+                name: this.userStore.user.name,
+            },
+            errors: [],
+        }
+    },
+    methods: {
+        async submitForm() {
+            this.errors = [];
+
+            if (this.form.email === '') {
+                this.errors.push('Your e-mail is missing');
+                console.log('Your e-mail is missing');
+            }
+
+            if (this.form.name === '') {
+                this.errors.push('Your name is missing');
+                console.log('Имя не заполнено');
+            }
+
+            if (this.errors.length === 0) {
+                try {
+                    // Проверяем, истек ли токен, и обновляем его при необходимости
+                    await this.userStore.refreshTokenIfNeeded();
+
+                    // Отправляем запрос на обновление профиля
+                    const response = await axios.post(
+                        'http://127.0.0.1:8000/api/edit-profile/',
+                        this.form,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${this.userStore.user.access}`,
+                            },
+                        }
+                    );
+
+                    if (response.data.message === 'Информация обновлена') {
+                        console.log('Success!');
+
+                        // Обновляем данные в хранилище Pinia
+                        this.userStore.setUserInfo({
+                            id: this.userStore.user.id,
+                            name: this.form.name,
+                            email: this.form.email,
+                        });
+
+                        // Очищаем форму (если нужно)
+                        this.form.email = this.userStore.user.email;
+                        this.form.name = this.userStore.user.name;
+
+                    } else {
+                        console.error('Что-то пошло не так');
+                    }
+                } catch (error) {
+                    console.log('error', error);
+                    if (error.response && error.response.status === 401) {
+                        // Токен истек, попробуйте обновить его
+                        await this.userStore.refreshToken();
+                        // Повторите запрос после обновления токена
+                        await this.submitForm();
+                    } else {
+                        this.errors.push('Ошибка при обновлении профиля');
+                    }
+                }
+            }
+        },
+    }
+}
+</script>
+
+<style></style>

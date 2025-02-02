@@ -8,6 +8,7 @@ import ServicesList from '@/views/ServicesList.vue'
 import Profile from '@/views/Profile.vue'
 import AddService from '@/views/AddService.vue'
 import LogOut from '@/views/LogOut.vue'
+import EditProfile from '@/views/EditProfile.vue'
 
 
 const router = createRouter({
@@ -52,6 +53,11 @@ const router = createRouter({
       path: '/profile/:id',
       name: 'profile',
       component: Profile,
+    },
+    {
+      path: '/profile/edit',
+      name: 'profile-edit',
+      component: EditProfile,
     },
     {
       path: '/add-service',

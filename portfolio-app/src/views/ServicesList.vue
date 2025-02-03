@@ -12,7 +12,7 @@
               {{ service.descr }}
             </p>
             <p class="card-text d-flex align-items-end justify-content-between">
-              <small class="text-muted align-middle">Срок {{ service.workTime || 'Не указано' }}</small>
+              <!-- <small class="text-muted align-middle">Срок {{ service.workTime || 'Не указано' }}</small> -->
               <a class="btn btn-warning">{{ service.price }} р</a>
             </p>
           </div>

@@ -23,6 +23,10 @@
                         placeholder="Какую услугу вы предоставляете?">
                 </div>
 
+                <div class="input-group mb-3">
+                    <input type="file"  accept="image/*" class="form-control" id="inputGroupFile02" @change="handleFileUpload">
+                    <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                </div>
                 <!-- <div class="input-block">
                     <label>Цена(руб):</label>
                     <span>*Мин. цена<input type="number" class="form-control" placeholder="0"
@@ -76,6 +80,7 @@ export default {
                 servicePrice: 1,
                 serviceCategory: null,
                 serviceActive: false,
+                image: null,
             },
             activeDrop: false,
             categories: [],
@@ -85,6 +90,11 @@ export default {
         this.getCategories();
     },
     methods: {
+
+        handleFileUpload(event) {
+            this.form.image = event.target.files[0]; // Обновление поля файла
+        },
+
         getCategories() {
             axios
                 .get('http://127.0.0.1:8000/api/services/categories')
@@ -100,33 +110,45 @@ export default {
         },
 
         async onSubmit() {
-            const formData = {
-                title: this.form.serviceTitle,
-                descr: this.form.serviceDescrpt,
-                price: parseFloat(this.form.servicePrice),
-                isActive: Boolean(this.form.serviceActive),
-                category: this.form.serviceCategory,
-            };
+            const formData = new FormData()
 
-            console.log('submitForm', this.formData)
+            formData.append('title', this.form.serviceTitle)
+            formData.append('descr', this.form.serviceDescrpt)
+            formData.append('price', parseFloat(this.form.servicePrice))
+            formData.append('isActive', Boolean(this.form.serviceActive))
+            formData.append('category', this.form.serviceCategory) 
 
+            if (this.form.image) {
+                formData.append('image', this.form.image)
+            }
 
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/services/add-service', formData);
-                console.log('data', response.data);
+                const response = await axios.post(
+                    'http://127.0.0.1:8000/api/services/add-service', // Проверьте URL endpoint
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
 
-                // Очистка формы после успешной отправки
+                        }
+                    }
+                );
+
+                // Сброс формы после успешной отправки
                 this.form = {
-                    serviceTitle: "",
-                    serviceDescrpt: "",
-                    servicePrice: 1,
-                    serviceCategory: null,
-                    serviceActive: false,
+                    title: "",
+                    descr: "",
+                    price: 1,
+                    category: null,
+                    isActive: false,
+                    image: null,
                 };
 
                 this.$router.push('/');
             } catch (error) {
-                console.log('error', error);
+                console.error('Submission error:', error);
+                const errorMessage = error.response?.data?.error || error.message
+                alert(`Ошибка при создании услуги: ${JSON.stringify(errorMessage)}`);
             }
         }
     }

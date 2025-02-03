@@ -49,15 +49,19 @@
                         <!-- услуга -->
                         <div class="card mb-3 service-card" v-for="service in services" :key="service.id">
                             <div class="row g-0 p-2">
-                                <div class="col">
-                                    <div class="service-img"><img src="" alt="фото услуги"></div>
+                                <!-- Блок с фото -->
+                                <div class="col-md-4">
+                                    <div class="service-img">
+                                        <!-- Выводим первое фото, если оно есть -->
+                                        <img v-if="service.photos.length > 0" :src="service.photos[0].get_image"
+                                            alt="фото услуги" class="img-fluid rounded-start">
+                                    </div>
                                 </div>
+                                <!-- Блок с описанием -->
                                 <div class="col-md-8">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ service.title }}</h5>
-                                        <p class="card-text">
-                                            {{ service.descr }}
-                                        </p>
+                                        <p class="card-text">{{ service.descr }}</p>
                                         <p class="card-text d-flex align-items-end justify-content-between">
                                             <a class="btn btn-warning">{{ service.price }} р</a>
                                         </p>

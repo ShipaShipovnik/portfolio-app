@@ -22,10 +22,16 @@ class Category(models.Model):
 
 
 # Услуги =======================================================
-class ServicePhoto(models.Model):
+class ServiceAttachment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='service_photos')
     created_by = models.ForeignKey(User, related_name='service_photos', on_delete=models.CASCADE)
+
+    def get_image(self):
+        if self.image:
+            return 'http://127.0.0.1:8000' + self.image.url
+        else:
+            return ''
 
 
 class Service(models.Model):
@@ -38,7 +44,7 @@ class Service(models.Model):
     # workTime = models.CharField(max_length=150)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='services')
 
-    photos = models.ManyToManyField('ServicePhoto', blank=True)
+    photos = models.ManyToManyField('ServiceAttachment', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='services', on_delete=models.CASCADE)

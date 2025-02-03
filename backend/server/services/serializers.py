@@ -1,23 +1,21 @@
-from rest_framework import serializers
-
-from users.models import User
-from users.serializers import UserSerializer
-
 from .models import Service, Category
 
 from rest_framework import serializers
-from .models import Service
+from .models import Service,ServiceAttachment
 
-from rest_framework import serializers
-from .models import Service
+class ServiceAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceAttachment
+        fields = ('id', 'get_image',)
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
+    photos = ServiceAttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
-        fields = ['id', 'title', 'descr', 'price', 'isActive', 'category', 'created_by', 'created_at']
+        fields = ['id', 'title', 'descr', 'price', 'isActive', 'category','photos', 'created_by', 'created_at']
 
 
 class CategorySerializer(serializers.ModelSerializer):

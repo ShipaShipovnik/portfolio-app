@@ -57,7 +57,7 @@
                     <input type="checkbox" v-model="form.serviceActive">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Создать услугу</button>
+                <button type="submit" class="btn btn-warning">Создать услугу</button>
             </form>
         </div>
     </div>

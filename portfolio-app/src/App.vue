@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper p-2">
+  <div class="wrapper">
     <AppHeader />
     <div class="content">
       <router-view>

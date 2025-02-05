@@ -3,16 +3,26 @@
         <h1 class="h1 text-center">Авторизация</h1>
         <div class="login-form text-center">
             <form @submit.prevent="submitForm">
-                <label class="form-label">
-                    Email:
-                    <input class="form-control" type="email" v-model="form.email" required />
-                </label>
-                <br />
-                <label class="form-label">
-                    Пароль:
-                    <input class="form-control" type="password" v-model="form.password" required />
-                </label>
-                <br />
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input id="email" class="form-control" type="email" v-model="form.email"
+                        placeholder="Введите ваш email" required />
+                </div>
+
+                <!-- Поле для пароля -->
+                <div class="mb-3">
+                    <label for="password1" class="form-label">Пароль:</label>
+                    <input id="password1" class="form-control" type="password" v-model="form.password"
+                        placeholder="Введите пароль" required />
+                </div>
+
+                <!-- Блок для вывода ошибок -->
+                <template v-if="errors.length > 0">
+                    <div class="alert alert-danger">
+                        <p class="m-0" v-for="error in errors" :key="error">{{ error }}</p>
+                    </div>
+                </template>
+
                 <button type="submit" class="btn btn-warning ">Войти</button>
             </form>
             <p class="text-muted" mt-4>
@@ -52,26 +62,28 @@ export default {
 
             // Валидация полей
             if (this.form.email === '') {
-                this.errors.push('Your e-mail is missing');
+                this.errors.push('Введите почту!');
             }
 
             if (this.form.password === '') {
-                this.errors.push('Your password is missing');
+                this.errors.push('Введите пароль!');
             }
 
             if (this.errors.length === 0) {
                 try {
-                    // Шаг 1: Авторизация (получение токена)
+                    // Авторизация (получение токена)
                     const loginResponse = await axios.post('/login/', this.form);
                     this.userStore.setToken(loginResponse.data);
 
                     axios.defaults.headers.common["Authorization"] = "Bearer " + loginResponse.data.access;
 
-                    // Шаг 2: Получение информации о пользователе
+                    //Получение информации о пользователе
                     const userResponse = await axios.get('/me/');
                     this.userStore.setUserInfo(userResponse.data);
 
-                    // Перенаправление на главную страницу
+                    this.errors = [];
+                    
+                    // Перенаправление на главную страницу  
                     this.$router.push('/');
                 } catch (error) {
                     console.log('error', error);
@@ -79,12 +91,12 @@ export default {
                     // Обработка ошибок
                     if (error.response) {
                         if (error.response.status === 401) {
-                            this.errors.push('Invalid email or password');
+                            this.errors.push('Неправильная почта или пароль');
                         } else {
-                            this.errors.push('Something went wrong. Please try again.');
+                            this.errors.push('Что то пошло не так. Пожалуйста повторите попытку.');
                         }
                     } else {
-                        this.errors.push('Network error. Please check your connection.');
+                        this.errors.push('Ошибка сети. Проверьте соединение.');
                     }
                 }
             }

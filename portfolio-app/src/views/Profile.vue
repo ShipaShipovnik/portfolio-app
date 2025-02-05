@@ -93,9 +93,21 @@
                                                 <!-- Цена -->
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="text-warning fw-bold">{{ service.price }} р</span>
-                                                    <button class="btn btn-outline-warning btn-sm">
-                                                        <i class="bi bi-eye"></i> Подробнее
-                                                    </button>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-outline-danger btn-sm"
+                                                            @click="deleteService(service)">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                        <router-link
+                                                            :to="{ name: 'service-detail', params: { id: service.id } }"
+                                                            class="btn btn-outline-warning btn-sm mx-2">
+
+                                                            <i class="bi bi-eye"></i> Подробнее
+                                                        </router-link>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -161,6 +173,35 @@ export default {
         setActiveTab(tab) {
             this.activeTab = tab;
         },
+
+        async deleteService(service) {
+            try {
+                const isConfirmed = confirm(`Вы уверены, что хотите удалить услугу "${service.title}"?`);
+
+                // Если пользователь нажал "Отмена", прерываем выполнение
+                if (!isConfirmed) {
+                    return;
+                }
+
+                console.log('Deleting service:', service);
+
+                // Отправляем запрос на удаление
+                const response = await axios.delete(
+                    `http://127.0.0.1:8000/api/services/delete-service/${service.id}/`,
+                );
+
+                console.log('Service deleted:', response.data);
+
+                this.$router.push('/')
+
+                this.services = this.services.filter(s => s.id !== service.id);
+            } catch (error) {
+                console.error('Error deleting service:', error);
+                alert('Ошибка при удалении услуги');
+            }
+        },
+
+
         getMyServices() {
             axios
                 .get(`http://127.0.0.1:8000/api/services/profile/${this.$route.params.id}`)

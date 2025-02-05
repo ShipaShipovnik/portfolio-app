@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.template.context_processors import request
+from pyexpat.errors import messages
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
@@ -70,12 +73,33 @@ def add_service(request):
         service.save()
 
         if attachment:
-            service.photos.add(attachment)  # Используем поле photos
+            service.photos.add(attachment)
 
         serializer = ServiceSerializer(service)
         return JsonResponse(serializer.data, safe=False)
     else:
         return JsonResponse({'error': service_form.errors}, status=400)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_service(request, pk):
+    try:
+        service = get_object_or_404(Service, pk=pk, created_by=request.user)
+        service.delete()
+        return Response({'message': 'Услуга успешно удалена'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def service_detail(request, pk):
+    service = Service.objects.get(pk=pk)
+
+    return JsonResponse({
+        'service': ServiceSerializer(service).data
+    })
 
 
 @api_view(["GET"])

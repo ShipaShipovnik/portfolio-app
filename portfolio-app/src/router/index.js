@@ -3,11 +3,12 @@ import Home from "../views/Home.vue";
 import Register from "../views/Register.vue";
 import Search from "@/views/Search.vue";
 import LogIn from "@/views/LogIn.vue";
-import ServicesList from "@/views/ServicesList.vue";
+import ServicesList from "@/components/ServicesList.vue";
 import Profile from "@/views/Profile.vue";
 import AddService from "@/views/AddService.vue";
 import LogOut from "@/views/LogOut.vue";
 import EditProfile from "@/views/EditProfile.vue";
+import ServiceDetail from "@/views/ServiceDetail.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,11 +39,6 @@ const router = createRouter({
       component: Search,
     },
     {
-      path: "/list",
-      name: "list",
-      component: ServicesList,
-    },
-    {
       path: "/profile/:id",
       name: "profile",
       component: Profile,
@@ -56,6 +52,11 @@ const router = createRouter({
       path: "/add-service",
       name: "add-service",
       component: AddService,
+    },
+    {
+      path: "/services/:id",
+      name: "service-detail",
+      component: ServiceDetail,
     },
   ],
 });

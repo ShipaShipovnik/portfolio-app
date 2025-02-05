@@ -12,6 +12,12 @@
                     Имя:
                     <input class="form-control" type="text" v-model="form.name" required />
                 </label>
+
+                <!-- <label class="form-label mb-2">
+                    Специализация:
+                    <input class="form-control" type="email" placeholder="на чем вы специализируетесь?" v-model="form.spec"  />
+                </label> -->
+
                 <label class="form-label mb-2">
                     Email:
                     <input class="form-control" type="email" v-model="form.email" required />
@@ -23,7 +29,7 @@
                     </div>
                 </template>
 
-                <button type="submit" class="btn btn-warning mt-3 ">Сохранить измнения</button>
+                <button type="submit" class="btn btn-warning mt-3 ">Сохранить изменения</button>
             </form>
         </div>
     </div>

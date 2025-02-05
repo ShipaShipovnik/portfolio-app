@@ -1,43 +1,62 @@
+html
+Copy
 <template>
-    <div class="main-block register-page container shadow p-5">
-        <h1 class="h1 text-center">Регистрация</h1>
-        <div class="register-form form text-center">
-            <form v-on:submit.prevent="submitForm">
-                <label class="form-label">
-                    Имя:
-                    <input class="form-control" type="text" v-model="form.name" required />
-                </label>
-                <br />
-                <label class="form-label">
-                    Email:
-                    <input class="form-control" type="email" v-model="form.email" required />
-                </label>
-                <br />
-                <label class="form-label">
-                    Пароль:
-                    <input class="form-control" type="password" v-model="form.password1" required />
-                </label>
-                <label class="form-label">
-                    Поворите пароль:
-                    <input class="form-control" type="password" v-model="form.password2" required />
-                </label>
-                <br />
-                <br />
+    <div class="main-block register-page container shadow p-5 rounded">
+        <h1 class="h1 text-center mb-4">Регистрация</h1>
+        <div class="register-form form">
+            <form @submit.prevent="submitForm" class="needs-validation" novalidate>
+                <!-- Поле для имени -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">Имя:</label>
+                    <input id="name" class="form-control" type="text" v-model="form.name" placeholder="Введите ваше имя"
+                        required />
+                </div>
 
-                <template v-if="this.errors.length > 0">
-                    <div class="m-2 p-5">
-                        <p v-for="error in errors" :key="error">{{ error }}</p>
+                <!-- Поле для email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input id="email" class="form-control" type="email" v-model="form.email"
+                        placeholder="Введите ваш email" required />
+                </div>
+
+                <!-- Поле для пароля -->
+                <div class="mb-3">
+                    <label for="password1" class="form-label">Пароль:</label>
+                    <input id="password1" class="form-control" type="password" v-model="form.password1"
+                        placeholder="Введите пароль" required />
+                </div>
+
+                <!-- Поле для подтверждения пароля -->
+                <div class="mb-4">
+                    <label for="password2" class="form-label">Повторите пароль:</label>
+                    <input id="password2" class="form-control" type="password" v-model="form.password2"
+                        placeholder="Повторите пароль" required />
+                </div>
+
+                <!-- Блок для вывода ошибок -->
+                <div v-if="successMessage.length > 0" class="alert alert-success" role="alert">
+                    {{ successMessage }}
+                </div>
+                <template v-if="errors.length > 0">
+                    <div class="alert alert-danger">
+                        <p class="m-0" v-for="error in errors" :key="error">{{ error }}</p>
                     </div>
                 </template>
 
-                <button type="submit" class="btn btn-warning">Зарегистрироваться</button>
+                <!-- Кнопка отправки формы -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-warning btn-lg mt-3">
+                        Зарегистрироваться
+                    </button>
+                </div>
             </form>
-            <p class="mt-4 text-muted">
-                Уже есть аккаунт? <router-link to="/login" class="text-warning">Войти.</router-link>
+
+            <!-- Ссылка на страницу входа -->
+            <p class="mt-4 text-center text-muted">
+                Уже есть аккаунт? <router-link to="/login" class="text-warning">Войти</router-link>
             </p>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -62,6 +81,7 @@ export default {
                 password1: '',
                 password2: ''
             },
+            successMessage: '',
             errors: [],
         }
     },
@@ -71,22 +91,25 @@ export default {
             console.log('Form submitted');
             this.errors = []
 
+            // Валидация
             if (this.form.email === '') {
-                this.errors.push('Your e-mail is missing')
-                console.log('Your e-mail is missing')
+                this.errors.push('Введите почту!')
+
+                console.log('Не введена почта!')
             }
 
             if (this.form.name === '') {
-                this.errors.push('Your name is missing')
-                console.log('имя ьбоять')
+                this.errors.push('Введите имя!')
+
+                console.log('Не введено имя!')
             }
 
             if (this.form.password1 === '') {
-                this.errors.push('паролоь')
+                this.errors.push('Не введен пароль!')
             }
 
             if (this.form.password1 !== this.form.password2) {
-                this.errors.push('не совпадают')
+                this.errors.push('Пароли не совпадают!')
             }
 
             if (this.errors.length === 0) {
@@ -94,14 +117,15 @@ export default {
                     .post('/register/', this.form)
                     .then(response => {
                         if (response.data.message === 'success') {
-                            console.log('отправилось!')
-                            this.toastStore.showToast(5000, 'Пользователь создан. Войдите.', 'bg-success text-white')
+                            console.log('Отправилось на сервер!')
                             this.form.email = ''
                             this.form.name = ''
                             this.form.password1 = ''
                             this.form.password2 = ''
+
+                            this.successMessage = 'Регистрация прошла успешно. Перейдите на страницу входа.'
                         } else {
-                            this.toastStore.showToast(5000, 'Something went wrong. Please try again', 'bg-warning')
+                            this.errors.push('Что-то пошло не так. Обновите страницу и попробуйте снова.')
                         }
                     })
                     .catch(error => {

@@ -1,6 +1,6 @@
 <template>
-  <div class="row g-4">
-    <div v-for="service in services" :key="service.id" class="col-md-6">
+  <div class="row g-4 grid">
+    <div v-for="service in services" :key="service.id" class="col">
       <div class="card ">
         <div class="card-body">
           <!-- Фото услуги -->

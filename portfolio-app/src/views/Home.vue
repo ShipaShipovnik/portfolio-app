@@ -19,19 +19,47 @@
       <p>Неважно, вы — опытный мастер или только начинаете свой путь, Masterskaya поможет вам организовать свою
         деятельность, привлечь новых заказчиков и сосредоточиться на том, что у вас получается лучше всего.</p>
 
-      <a href="#" class="cta-button">Начните прямо сейчас!</a>
+      <div v-if="!userStore.user.isAuthenticated">
+        <router-link to="/register">
+          Начните уже сейчас!
+        </router-link>
+      </div>
+      <div v-else>
+        <router-link to="/add-service">
+          Создайте свою первую услугу
+        </router-link>
+        или
+        <router-link to="/search">
+          Найдите мастеров и их услуги!
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { useUserStore } from '@/stores/user';
+import { computed } from 'vue';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 export default {
+  setup() {
+    const userStore = useUserStore()
+
+    const isAuthenticated = computed(() => userStore.user.isAuthenticated);
+    const user = computed(() => userStore.user);
+
+    return {
+      isAuthenticated,
+      user,
+      userStore
+    }
+  },
 
 }
 </script>
 
 <style scoped>
-
 header {
   background-color: #e0c652;
   color: white;
@@ -77,5 +105,4 @@ ul li {
 .cta-button:hover {
   background-color: #45a049;
 }
-
 </style>

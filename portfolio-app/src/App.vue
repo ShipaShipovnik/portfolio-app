@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="wrapper ">
     <AppHeader />
     <div class="content">
       <router-view>
@@ -48,8 +48,9 @@ export default {
 </template>
 
 <style scoped>
-.wrapper{
-  min-height: 100vh;
-  position: relative;
+.wrapper {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr auto;
 }
 </style>

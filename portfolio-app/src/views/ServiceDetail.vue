@@ -24,14 +24,19 @@
                             Не активна. Автор не готов принять заказ.
                         </span>
 
-                        <button type="button" class="btn btn-warning">
+                        <div class="btn btn-outline-warning mb-3">
                             {{ service.price }} руб.
-                        </button>
+                        </div>
 
-                        <button class="btn btn-outline-danger btn-sm" @click="deleteService(service)"
-                            v-if="userStore.user.id === user.id">
-                            <i class="bi bi-trash"> Удалить</i>
-                        </button>
+                        <div v-if="userStore.user.id === user.id" class="btn-group " role="group" >
+                            <button class="service-control-btns btn btn-danger mb-5 btn-sm" @click="deleteService(service)">
+                                <i class="bi bi-trash">Удалить</i>
+                            </button>
+                            <router-link :to="{ name: 'service-edit', params: { id: service.id } }"
+                                class="service-control-btns btn btn-success btn-sm ">
+                                <i class="bi bi-pencil"> Редактировать</i>
+                            </router-link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -42,51 +47,45 @@
 
 <script>
 import axios from 'axios';
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user';
 
 export default {
     data() {
         return {
             service: {
-                category:{}
+                title: '',
+                descr: '',
+                category: {},
+                price: 0,
+                isActive: false,
+                photos: [],
+                image: null
             },
-            user: {
-            }
-        }
+            categories: [],
+            user: {}
+        };
     },
     setup() {
-        const userStore = useUserStore()
-
+        const userStore = useUserStore();
         return {
             userStore
-        }
-
+        };
     },
     mounted() {
-        this.getServiceDetail()
+        this.getServiceDetail();
+        this.getCategories();
     },
     methods: {
         async deleteService(service) {
             try {
                 const isConfirmed = confirm(`Вы уверены, что хотите удалить услугу "${service.title}"?`);
-
-                // Если пользователь нажал "Отмена", прерываем выполнение
                 if (!isConfirmed) {
                     return;
                 }
-
-                console.log('Deleting service:', service);
-
-                // Отправляем запрос на удаление
                 const response = await axios.delete(
-                    `http://127.0.0.1:8000/api/services/delete-service/${service.id}/`,
+                    `http://127.0.0.1:8000/api/services/delete-service/${service.id}/`
                 );
-
-                console.log('Service deleted:', response.data);
-
-                this.$router.push('/')
-
-                // this.services = this.services.filter(s => s.id !== service.id);
+                this.$router.push({ name: 'profile', params: { id: this.userStore.user.id } });
             } catch (error) {
                 console.error('Error deleting service:', error);
                 alert('Ошибка при удалении услуги');
@@ -102,20 +101,35 @@ export default {
                     // Получаем данные из вложенного объекта "service"
                     this.service = response.data.service || {};
                     console.log(this.service);
+
+                    // Получаем данные пользователя
+                    this.user = response.data.user || {};
+                    console.log('User data from service:', this.user);
                 })
                 .catch(error => {
                     console.log('error', error);
                     this.error = 'Ошибка при загрузке данных';
                 });
+        },
+
+        getCategories() {
+            axios
+                .get('http://127.0.0.1:8000/api/categories/')
+                .then(response => {
+                    this.categories = response.data;
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    this.error = 'Ошибка при загрузке категорий';
+                });
         }
     }
-}
+};
 </script>
 
 <style scoped>
-/* .service-img img {
-    height: 200px;
-    width: 100%;
-    object-fit: cover;
-} */
+.service-control-btns{
+    height: 30px;
+}
+
 </style>

@@ -18,10 +18,8 @@
             <span class="text-warning fw-bold">{{ service.price }} р</span>
             <div class="d-flex justify-content-between align-items-center">
             </div>
+
             <div>
-              <button class="btn btn-outline-danger btn-sm" @click="deleteService(service)">
-                <i class="bi bi-trash"></i>
-              </button>
               <router-link :to="{ name: 'service-detail', params: { id: service.id } }"
                 class="btn btn-outline-warning btn-sm mx-2">
 
@@ -46,7 +44,7 @@ export default {
       error: ''
     };
   },
-  mounted() {
+  created() {
     this.getServices();
   },
   methods: {

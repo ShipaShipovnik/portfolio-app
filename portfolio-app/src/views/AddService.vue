@@ -24,26 +24,10 @@
                 </div>
 
                 <div class="input-group mb-3">
-                    <input type="file"  accept="image/*" class="form-control" id="inputGroupFile02" @change="handleFileUpload">
+                    <input type="file" accept="image/*" class="form-control" id="inputGroupFile02"
+                        @change="handleFileUpload">
                     <label class="input-group-text" for="inputGroupFile02">Upload</label>
                 </div>
-                <!-- <div class="input-block">
-                    <label>Цена(руб):</label>
-                    <span>*Мин. цена<input type="number" class="form-control" placeholder="0"
-                            v-model.number="form.serviceMinPrice"> - Макс. цена <input type="number"
-                            class="form-control" placeholder="0" v-model.number="form.serviceMaxPrice"></span>
-                </div>
-
-                <div class="input-block">
-                    <label for="">Кол-во свободных слотов:</label>
-                    <input type="number" class="input-short" v-model.number="form.serviceAmount" />
-                </div>
-
-                <div class="input-block">
-                    <label>Срок выполнения:</label>
-                    <input type="text" class="form-control" placeholder="Напр. от 2 недель до 1 месяца"
-                        v-model="form.serviceWorkTime">
-                </div> -->
 
                 <div class="input-block">
                     <label for="">Категория:</label>
@@ -67,10 +51,18 @@
 import vSelect from 'vs-vue3-select'
 import 'vs-vue3-select/dist/vs-vue3-select.css'
 import axios from 'axios'
+import { goToProfile } from '@/router';
+import { useUserStore } from '@/stores/user';
 
 export default {
     components: {
         vSelect,
+    },
+    setup() {
+        const userStore = useUserStore();
+        return {
+            userStore
+        };
     },
     data() {
         return {
@@ -82,7 +74,6 @@ export default {
                 serviceActive: false,
                 image: null,
             },
-            activeDrop: false,
             categories: [],
         }
     },
@@ -116,7 +107,7 @@ export default {
             formData.append('descr', this.form.serviceDescrpt)
             formData.append('price', parseFloat(this.form.servicePrice))
             formData.append('isActive', Boolean(this.form.serviceActive))
-            formData.append('category', this.form.serviceCategory) 
+            formData.append('category', this.form.serviceCategory)
 
             if (this.form.image) {
                 formData.append('image', this.form.image)
@@ -143,7 +134,8 @@ export default {
                     image: null,
                 };
 
-                this.$router.push('/');
+                goToProfile(this.userStore.user.id);
+
             } catch (error) {
                 console.error('Submission error:', error);
                 const errorMessage = error.response?.data?.error || error.message

@@ -17,7 +17,7 @@ class ServiceAttachmentSerializer(serializers.ModelSerializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    created_by = serializers.ReadOnlyField(source='created_by.name')
     photos = ServiceAttachmentSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
 

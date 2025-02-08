@@ -1,13 +1,8 @@
-from django.shortcuts import render
 from django.http import JsonResponse
-from django.template.context_processors import request
-from pyexpat.errors import messages
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import (
     api_view,
-    authentication_classes,
     permission_classes,
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -39,16 +34,6 @@ def service_list_profile(request, id):
     return JsonResponse(
         {"services": services_serializer.data, "user": user_serializer.data}, safe=False
     )
-
-
-# @api_view(['POST'])
-# def add_service(request):
-#     if request.method == 'POST':
-#         serializer = ServiceSerializer(data=request.data)
-#         if serializer.is_valid():
-#             service = serializer.save(created_by=request.user)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -91,14 +76,48 @@ def delete_service(request, pk):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk, created_by=request.user)
+    service_form = ServiceForm(request.POST, instance=service)
+    attachment = None
+
+    # Обработка вложения, если есть файл
+    if request.FILES:
+        attachment_form = AttachmentForm(request.POST, request.FILES)
+        if attachment_form.is_valid():
+            attachment = attachment_form.save(commit=False)
+            attachment.created_by = request.user
+            attachment.save()
+        else:
+            return JsonResponse({'error': attachment_form.errors}, status=400)
+
+    if service_form.is_valid():
+        service = service_form.save(commit=False)
+        service.save()
+
+        if attachment:
+            service.photos.set([attachment])
+
+        serializer = ServiceSerializer(service)
+        return JsonResponse(serializer.data, safe=False)
+    else:
+        return JsonResponse({'error': service_form.errors}, status=400)
+
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def service_detail(request, pk):
     service = Service.objects.get(pk=pk)
-
+    service_data = ServiceSerializer(service).data
+    user_data = {
+        'id': service.created_by.id,
+        'username': service.created_by.name
+    }
     return JsonResponse({
-        'service': ServiceSerializer(service).data
+        'service': service_data,
+        'user': user_data
     })
 
 

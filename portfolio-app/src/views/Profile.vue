@@ -37,14 +37,14 @@
                             </div>
 
                             <!-- Социальные сети -->
-                            <div class="socials mt-4">
+                            <!-- <div class="socials mt-4">
                                 <a href="#" class="text-decoration-none text-secondary me-3">
                                     <i class="bi bi-telegram fs-5"></i>
                                 </a>
                                 <a href="#" class="text-decoration-none text-secondary">
                                     <i class="bi bi-vk fs-5"></i>
                                 </a>
-                            </div>
+                            </div> -->
 
                             <!-- Кнопка редактирования -->
                             <router-link v-if="userStore.user.id === user.id" to="/profile/edit"
@@ -62,6 +62,9 @@
                             <!-- Галерея -->
                             <div v-if="activeTab === 'gallery'" class="about-tab">
                                 <h3 class="text-muted">Тут будут ваши работы</h3>
+                                <div class="alert alert-warning" role="alert">
+                                    Все еще в разработке ;)
+                                </div>
                             </div>
 
                             <!-- Услуги -->
@@ -122,6 +125,11 @@
                                         О вас
                                     </p>
                                 </div>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Все еще в разработке ;)
+                                </div>
+
 
                                 <div class="about-links">
                                     <ul class="list-group">
@@ -192,7 +200,7 @@ export default {
 
                 console.log('Service deleted:', response.data);
 
-                this.$router.push('/')
+                // this.$router.push({ name: 'profile', params: { id: this.userStore.user.id } });
 
                 this.services = this.services.filter(s => s.id !== service.id);
             } catch (error) {

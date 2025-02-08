@@ -39,11 +39,12 @@ def register(request):
     if form.is_valid():
         print("Form is valid. Saving user.")  # Логируем успешную валидацию
         form.save()
+        return JsonResponse({'message': 'success'})
     else:
-        message = 'error'
         print(f"Form errors: {form.errors}")  # Логируем ошибки формы
-
-    return JsonResponse({'message': message})
+        # Преобразуем ошибки формы в список
+        errors = {field: errors[0] for field, errors in form.errors.items()}
+        return JsonResponse({'message': 'error', 'errors': errors}, status=400)
 
 
 @api_view(['POST'])

@@ -88,7 +88,7 @@ export default {
 
     methods: {
         submitForm() {
-            console.log('Form submitted');
+            console.log('Отправка формы...');
             this.errors = []
 
             // Валидация
@@ -118,6 +118,7 @@ export default {
                     .then(response => {
                         if (response.data.message === 'success') {
                             console.log('Отправилось на сервер!')
+
                             this.form.email = ''
                             this.form.name = ''
                             this.form.password1 = ''
@@ -129,8 +130,17 @@ export default {
                         }
                     })
                     .catch(error => {
-                        console.log('error', error)
-                    })
+                        if (error.response && error.response.data.errors) {
+                            //ошибки валидации с сервера
+                            const serverErrors = error.response.data.errors;
+                            for (let field in serverErrors) {
+                                this.errors.push(serverErrors[field]);
+                            }
+                        } else {
+                            this.errors.push('Что-то пошло не так. Обновите страницу и попробуйте снова.');
+                        }
+                        console.log('error', error);
+                    });
             }
         }
     }
